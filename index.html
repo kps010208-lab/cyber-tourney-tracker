@@ -1,0 +1,1773 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberTrack - Отслеживание киберспортивных турниров</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Oxanium:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6a11cb;
+            --secondary: #2575fc;
+            --dark: #0f0f23;
+            --darker: #0a0a18;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --cyber-blue: #00d4ff;
+            --cyber-purple: #9d4edd;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--dark);
+            color: var(--light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Oxanium', cursive;
+            font-weight: 700;
+        }
+
+        /* Модальные окна */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, var(--darker), var(--dark));
+            border-radius: 10px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            border: 2px solid var(--cyber-blue);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .modal-title {
+            color: var(--cyber-blue);
+            font-size: 1.8rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-modal:hover {
+            color: var(--cyber-blue);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--light);
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: rgba(15, 15, 35, 0.8);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 4px;
+            color: var(--light);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--cyber-blue);
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+        }
+
+        .modal-footer {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(90deg, var(--darker), var(--dark));
+            padding: 1.2rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid var(--cyber-blue);
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.2);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--cyber-blue);
+        }
+
+        .logo i {
+            color: var(--cyber-purple);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-menu a:hover {
+            color: var(--cyber-blue);
+        }
+
+        .nav-menu a.active {
+            color: var(--cyber-blue);
+        }
+
+        .nav-menu a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--cyber-blue);
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(106, 17, 203, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--cyber-blue);
+            border: 1px solid var(--cyber-blue);
+        }
+
+        .btn-outline:hover {
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+
+        /* Профиль пользователя */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .user-info {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--darker);
+            border: 1px solid var(--cyber-blue);
+            border-radius: 8px;
+            padding: 1rem;
+            min-width: 200px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            z-index: 1001;
+        }
+
+        .user-profile:hover .user-info {
+            display: block;
+        }
+
+        .user-info h4 {
+            color: var(--cyber-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .user-info p {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .user-menu {
+            list-style: none;
+        }
+
+        .user-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .user-menu a {
+            color: var(--light);
+            text-decoration: none;
+            display: block;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        .user-menu a:hover {
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        /* Уведомления */
+        .notifications-dropdown {
+            position: relative;
+        }
+
+        .notifications-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 50%;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        .notifications-panel {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--darker);
+            border: 1px solid var(--cyber-blue);
+            border-radius: 8px;
+            width: 350px;
+            max-height: 400px;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            z-index: 1001;
+        }
+
+        .notifications-dropdown.active .notifications-panel {
+            display: block;
+        }
+
+        .notifications-header {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notification-item {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: background 0.3s;
+            cursor: pointer;
+        }
+
+        .notification-item:hover {
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .notification-item.unread {
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: var(--cyber-blue);
+            margin-bottom: 0.3rem;
+        }
+
+        .notification-message {
+            color: var(--light);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .notification-time {
+            color: var(--gray);
+            font-size: 0.8rem;
+        }
+
+        .notification-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .btn-small {
+            padding: 0.3rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        /* Hero section */
+        .hero {
+            padding: 4rem 0;
+            background: linear-gradient(rgba(15, 15, 35, 0.9), rgba(15, 15, 35, 0.9)), url('https://images.unsplash.com/photo-1511512578047-dfb367046420?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(90deg, var(--cyber-blue), var(--cyber-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            color: #ccc;
+        }
+
+        /* Main content */
+        .section-title {
+            font-size: 2.2rem;
+            margin-bottom: 2rem;
+            color: var(--cyber-blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: var(--cyber-purple);
+        }
+
+        .section {
+            padding: 3rem 0;
+        }
+
+        /* Live matches */
+        .live-matches {
+            background-color: rgba(10, 10, 24, 0.8);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .live-badge {
+            display: inline-block;
+            background-color: var(--danger);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1.2rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .match-card {
+            background-color: rgba(15, 15, 35, 0.8);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--cyber-blue);
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .match-card.upcoming {
+            border-left-color: var(--warning);
+        }
+
+        .match-card.finished {
+            border-left-color: var(--gray);
+        }
+
+        .team {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .team-logo {
+            width: 50px;
+            height: 50px;
+            background-color: var(--darker);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--cyber-blue);
+        }
+
+        .team-info {
+            flex-grow: 1;
+        }
+
+        .team-name {
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .team-record {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .team-score {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--cyber-blue);
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .vs {
+            text-align: center;
+            font-weight: 700;
+            color: var(--cyber-purple);
+            font-size: 1.2rem;
+        }
+
+        .match-info {
+            text-align: center;
+            color: var(--gray);
+        }
+
+        .match-tournament {
+            font-weight: 600;
+            color: var(--cyber-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .match-time {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .match-status {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .status-live {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: var(--danger);
+        }
+
+        .status-upcoming {
+            background-color: rgba(255, 193, 7, 0.2);
+            color: var(--warning);
+        }
+
+        .status-finished {
+            background-color: rgba(108, 117, 125, 0.2);
+            color: var(--gray);
+        }
+
+        /* Tournaments grid */
+        .tournaments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .tournament-card {
+            background: linear-gradient(145deg, rgba(15, 15, 35, 0.9), rgba(10, 10, 24, 0.9));
+            border-radius: 10px;
+            padding: 1.5rem;
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            transition: all 0.3s;
+        }
+
+        .tournament-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--cyber-blue);
+            box-shadow: 0 10px 20px rgba(0, 212, 255, 0.1);
+        }
+
+        .tournament-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--cyber-blue);
+        }
+
+        .tournament-game {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            color: var(--cyber-purple);
+            font-weight: 600;
+        }
+
+        .tournament-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            color: var(--gray);
+        }
+
+        .tournament-prize {
+            color: var(--warning);
+            font-weight: 600;
+        }
+
+        .tournament-teams {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .team-tag {
+            background-color: rgba(0, 212, 255, 0.1);
+            padding: 0.3rem 0.7rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        /* Games filter */
+        .games-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .game-filter-btn {
+            padding: 0.6rem 1.5rem;
+            background-color: rgba(15, 15, 35, 0.8);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            color: var(--light);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .game-filter-btn:hover, .game-filter-btn.active {
+            background-color: var(--cyber-blue);
+            color: var(--dark);
+            border-color: var(--cyber-blue);
+        }
+
+        /* Streams */
+        .streams-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stream-card {
+            background-color: rgba(15, 15, 35, 0.8);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .stream-preview {
+            height: 200px;
+            background-color: var(--darker);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stream-preview i {
+            font-size: 3rem;
+            color: var(--cyber-purple);
+        }
+
+        .stream-live {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: var(--danger);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .stream-info {
+            padding: 1.2rem;
+        }
+
+        .stream-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .stream-meta {
+            display: flex;
+            justify-content: space-between;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--darker);
+            padding: 3rem 0 1.5rem;
+            margin-top: 3rem;
+            border-top: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            color: var(--cyber-blue);
+            margin-bottom: 1.2rem;
+            font-size: 1.3rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.7rem;
+        }
+
+        .footer-links a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--cyber-blue);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(0, 212, 255, 0.1);
+            border-radius: 50%;
+            color: var(--cyber-blue);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .social-links a:hover {
+            background-color: var(--cyber-blue);
+            color: var(--dark);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Страница уведомлений */
+        .notifications-page {
+            display: none;
+            background-color: rgba(10, 10, 24, 0.8);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-top: 2rem;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .notifications-page.active {
+            display: block;
+        }
+
+        .notifications-header-page {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .notifications-controls {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+
+            .match-card {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .vs {
+                order: 3;
+            }
+
+            .notifications-panel {
+                width: 300px;
+                right: -50px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+
+            .tournaments-grid, .streams-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .user-actions {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .notifications-panel {
+                width: 280px;
+                right: -80px;
+            }
+
+            .notifications-header-page {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .notifications-controls {
+                flex-direction: column;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Модальное окно входа -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Вход в систему</h3>
+                <button class="close-modal" onclick="closeModal('loginModal')">&times;</button>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" class="form-control" placeholder="Введите ваш email" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Пароль</label>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="Введите пароль" required>
+                </div>
+                <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" id="rememberMe">
+                    <label for="rememberMe" style="margin: 0;">Запомнить меня</label>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('loginModal')">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Войти</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно регистрации -->
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Регистрация</h3>
+                <button class="close-modal" onclick="closeModal('registerModal')">&times;</button>
+            </div>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="registerUsername">Имя пользователя</label>
+                    <input type="text" id="registerUsername" class="form-control" placeholder="Введите имя пользователя" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" class="form-control" placeholder="Введите ваш email" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Пароль</label>
+                    <input type="password" id="registerPassword" class="form-control" placeholder="Введите пароль" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerConfirmPassword">Подтвердите пароль</label>
+                    <input type="password" id="registerConfirmPassword" class="form-control" placeholder="Подтвердите пароль" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('registerModal')">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-gamepad"></i>
+                    <span>CyberTrack</span>
+                </div>
+
+                <nav class="nav-menu">
+                    <a href="#" class="active" onclick="showHome()"><i class="fas fa-home"></i> Главная</a>
+                    <a href="#matches" onclick="showSection('matches')"><i class="fas fa-trophy"></i> Матчи</a>
+                    <a href="#tournaments" onclick="showSection('tournaments')"><i class="fas fa-calendar-alt"></i> Турниры</a>
+                    <a href="#streams" onclick="showSection('streams')"><i class="fas fa-video"></i> Трансляции</a>
+                    <a href="#notifications-page" onclick="showNotificationsPage()"><i class="fas fa-bell"></i> Уведомления</a>
+                </nav>
+
+                <div class="user-actions">
+                    <!-- Уведомления -->
+                    <div class="notifications-dropdown" id="notificationsDropdown">
+                        <button class="btn btn-outline" id="notificationsBtn" onclick="toggleNotifications()">
+                            <i class="fas fa-bell"></i>
+                            <span class="notifications-badge" id="notificationsCount">3</span>
+                        </button>
+                        <div class="notifications-panel" id="notificationsPanel">
+                            <div class="notifications-header">
+                                <h4>Уведомления</h4>
+                                <button class="btn btn-small btn-outline" onclick="markAllAsRead()">Отметить всё как прочитанное</button>
+                            </div>
+                            <div id="notificationsList">
+                                <!-- Уведомления будут добавляться через JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Профиль пользователя -->
+                    <div class="user-profile" id="userProfile" style="display: none;">
+                        <div class="user-avatar" id="userAvatar" onclick="toggleUserMenu()">U</div>
+                        <div class="user-info" id="userInfoPanel">
+                            <h4 id="userName">Пользователь</h4>
+                            <p id="userEmail">user@example.com</p>
+                            <ul class="user-menu">
+                                <li><a href="#" onclick="showProfile()"><i class="fas fa-user"></i> Профиль</a></li>
+                                <li><a href="#notifications-page" onclick="showNotificationsPage()"><i class="fas fa-bell"></i> Уведомления</a></li>
+                                <li><a href="#" onclick="showSettings()"><i class="fas fa-cog"></i> Настройки</a></li>
+                                <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Выйти</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Кнопки входа/регистрации -->
+                    <div id="authButtons">
+                        <button class="btn btn-outline" onclick="openModal('registerModal')">Регистрация</button>
+                        <button class="btn btn-primary" onclick="openModal('loginModal')"><i class="fas fa-user"></i> Войти</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Следите за киберспортивными турнирами</h1>
+            <p>Актуальное расписание матчей, результаты, статистика команд и прямые трансляции крупнейших киберспортивных событий в одном месте</p>
+            <div class="games-filter">
+                <button class="game-filter-btn active" onclick="filterGames('all')">Все игры</button>
+                <button class="game-filter-btn" onclick="filterGames('cs2')">Counter-Strike 2</button>
+                <button class="game-filter-btn" onclick="filterGames('dota2')">Dota 2</button>
+                <button class="game-filter-btn" onclick="filterGames('valorant')">VALORANT</button>
+                <button class="game-filter-btn" onclick="filterGames('lol')">League of Legends</button>
+                <button class="game-filter-btn" onclick="filterGames('ow2')">Overwatch 2</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main content -->
+    <main class="container">
+        <!-- Live matches section -->
+        <section class="section" id="matches">
+            <h2 class="section-title"><i class="fas fa-satellite-dish"></i> Текущие матчи</h2>
+
+            <div class="live-matches">
+                <div class="live-badge"><i class="fas fa-circle"></i> LIVE</div>
+
+                <div class="match-card">
+                    <div class="team">
+                        <div class="team-logo">NAVI</div>
+                        <div class="team-info">
+                            <div class="team-name">Natus Vincere</div>
+                            <div class="team-record">15-5 (1st EU)</div>
+                        </div>
+                        <div class="team-score">2</div>
+                    </div>
+
+                    <div class="vs">
+                        <div class="match-tournament">BLAST Premier Spring Final</div>
+                        <div class="match-time">BO3 • Карта 3 из 3</div>
+                        <div class="match-status status-live">LIVE</div>
+                    </div>
+
+                    <div class="team">
+                        <div class="team-score">1</div>
+                        <div class="team-info" style="text-align: right;">
+                            <div class="team-name">Team Vitality</div>
+                            <div class="team-record">14-6 (2nd EU)</div>
+                        </div>
+                        <div class="team-logo">VIT</div>
+                    </div>
+                </div>
+
+                <div class="match-card upcoming">
+                    <div class="team">
+                        <div class="team-logo">TS</div>
+                        <div class="team-info">
+                            <div class="team-name">Team Spirit</div>
+                            <div class="team-record">12-8 (3rd EU)</div>
+                        </div>
+                    </div>
+
+                    <div class="vs">
+                        <div class="match-tournament">IEM Cologne 2023</div>
+                        <div class="match-time">Через 2 часа • BO3</div>
+                        <div class="match-status status-upcoming">Скоро</div>
+                    </div>
+
+                    <div class="team">
+                        <div class="team-info" style="text-align: right;">
+                            <div class="team-name">FaZe Clan</div>
+                            <div class="team-record">13-7 (4th EU)</div>
+                        </div>
+                        <div class="team-logo">FZ</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tournaments section -->
+        <section class="section" id="tournaments">
+            <h2 class="section-title"><i class="fas fa-trophy"></i> Активные турниры</h2>
+
+            <div class="tournaments-grid">
+                <div class="tournament-card">
+                    <h3>The International 2023</h3>
+                    <div class="tournament-game">
+                        <i class="fab fa-d-and-d"></i> Dota 2
+                    </div>
+                    <div class="tournament-details">
+                        <div class="tournament-date">15-30 Октября</div>
+                        <div class="tournament-prize">$3,000,000</div>
+                    </div>
+                    <div class="tournament-teams">
+                        <span class="team-tag">Team Spirit</span>
+                        <span class="team-tag">Gaimin Gladiators</span>
+                        <span class="team-tag">Tundra Esports</span>
+                        <span class="team-tag">+15 команд</span>
+                    </div>
+                    <button class="btn btn-primary btn-block" onclick="trackTournament('The International 2023')">Отслеживать</button>
+                </div>
+
+                <div class="tournament-card">
+                    <h3>VALORANT Champions 2023</h3>
+                    <div class="tournament-game">
+                        <i class="fas fa-crosshairs"></i> VALORANT
+                    </div>
+                    <div class="tournament-details">
+                        <div class="tournament-date">6-26 Августа</div>
+                        <div class="tournament-prize">$2,250,000</div>
+                    </div>
+                    <div class="tournament-teams">
+                        <span class="team-tag">FNATIC</span>
+                        <span class="team-tag">LOUD</span>
+                        <span class="team-tag">Evil Geniuses</span>
+                        <span class="team-tag">+13 команд</span>
+                    </div>
+                    <button class="btn btn-primary btn-block" onclick="trackTournament('VALORANT Champions 2023')">Отслеживать</button>
+                </div>
+
+                <div class="tournament-card">
+                    <h3>BLAST Premier World Final</h3>
+                    <div class="tournament-game">
+                        <i class="fas fa-headset"></i> Counter-Strike 2
+                    </div>
+                    <div class="tournament-details">
+                        <div class="tournament-date">13-18 Декабря</div>
+                        <div class="tournament-prize">$1,000,000</div>
+                    </div>
+                    <div class="tournament-teams">
+                        <span class="team-tag">Team Vitality</span>
+                        <span class="team-tag">FaZe Clan</span>
+                        <span class="team-tag">Natus Vincere</span>
+                        <span class="team-tag">+5 команд</span>
+                    </div>
+                    <button class="btn btn-primary btn-block" onclick="trackTournament('BLAST Premier World Final')">Отслеживать</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Streams section -->
+        <section class="section" id="streams">
+            <h2 class="section-title"><i class="fas fa-video"></i> Популярные трансляции</h2>
+
+            <div class="streams-grid">
+                <div class="stream-card">
+                    <div class="stream-preview">
+                        <i class="fas fa-play-circle"></i>
+                        <div class="stream-live">LIVE</div>
+                    </div>
+                    <div class="stream-info">
+                        <div class="stream-title">BLAST Premier Spring Final - NAVI vs Vitality - Map 3</div>
+                        <div class="stream-meta">
+                            <span>blastpremier</span>
+                            <span>45,832 зрителей</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stream-card">
+                    <div class="stream-preview">
+                        <i class="fas fa-play-circle"></i>
+                        <div class="stream-live">LIVE</div>
+                    </div>
+                    <div class="stream-info">
+                        <div class="stream-title">The International 2023 - Group Stage Day 2</div>
+                        <div class="stream-meta">
+                            <span>dota2ti</span>
+                            <span>112,450 зрителей</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stream-card">
+                    <div class="stream-preview">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div class="stream-info">
+                        <div class="stream-title">VALORANT Champions - FNATIC vs EG Grand Final</div>
+                        <div class="stream-meta">
+                            <span>valorant</span>
+                            <span>Запись • 324,120 просмотров</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Страница уведомлений -->
+        <section class="notifications-page" id="notifications-page">
+            <div class="notifications-header-page">
+                <h2 class="section-title"><i class="fas fa-bell"></i> Все уведомления</h2>
+                <div class="notifications-controls">
+                    <button class="btn btn-outline" onclick="markAllAsRead()">Отметить всё как прочитанное</button>
+                    <button class="btn btn-outline" onclick="clearAllNotifications()">Очистить все</button>
+                </div>
+            </div>
+            <div id="allNotificationsList">
+                <!-- Все уведомления будут добавляться через JS -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>CyberTrack</h3>
+                    <p>Лучшая платформа для отслеживания киберспортивных турниров, матчей и статистики.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-twitch"></i></a>
+                        <a href="#"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Игры</h3>
+                    <ul class="footer-links">
+                        <li><a href="#" onclick="filterGames('cs2')">Counter-Strike 2</a></li>
+                        <li><a href="#" onclick="filterGames('dota2')">Dota 2</a></li>
+                        <li><a href="#" onclick="filterGames('valorant')">VALORANT</a></li>
+                        <li><a href="#" onclick="filterGames('lol')">League of Legends</a></li>
+                        <li><a href="#" onclick="filterGames('ow2')">Overwatch 2</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Платформа</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">О нас</a></li>
+                        <li><a href="#">Контакты</a></li>
+                        <li><a href="#">Политика конфиденциальности</a></li>
+                        <li><a href="#">Условия использования</a></li>
+                        <li><a href="#">Партнеры</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Подписка</h3>
+                    <p>Получайте уведомления о матчах ваших любимых команд</p>
+                    <div style="margin-top: 1rem;">
+                        <input type="email" id="subscribeEmail" placeholder="Ваш email" style="width: 100%; padding: 0.7rem; border-radius: 4px; border: 1px solid rgba(0, 212, 255, 0.3); background-color: rgba(15, 15, 35, 0.8); color: white;">
+                        <button class="btn btn-primary" onclick="subscribe()" style="width: 100%; margin-top: 0.7rem;">Подписаться</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="copyright">
+                &copy; 2023 CyberTrack. Все права защищены. Все названия игр, торговые марки и логотипы являются собственностью их соответствующих владельцев.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Данные пользователя
+        let currentUser = null;
+        let notifications = [
+            { id: 1, title: "Матч начался", message: "Natus Vincere vs Team Vitality - матч начался!", time: "5 минут назад", read: false, type: "match" },
+            { id: 2, title: "Новый турнир", message: "Регистрация на The International 2023 открыта!", time: "1 час назад", read: false, type: "tournament" },
+            { id: 3, title: "Ваша команда выиграла", message: "Team Spirit победила в последнем матче!", time: "3 часа назад", read: true, type: "team" },
+            { id: 4, title: "Напоминание", message: "Через 2 часа начнется матч Team Spirit vs FaZe Clan", time: "Вчера", read: true, type: "reminder" },
+            { id: 5, title: "Обновление статистики", message: "Ваша статистика за месяц обновлена", time: "2 дня назад", read: true, type: "stats" }
+        ];
+
+        // Закрытие выпадающих меню при клике вне их
+        document.addEventListener('click', function(event) {
+            const notificationsDropdown = document.getElementById('notificationsDropdown');
+            const userProfile = document.getElementById('userProfile');
+            
+            if (notificationsDropdown && !notificationsDropdown.contains(event.target)) {
+                notificationsDropdown.classList.remove('active');
+            }
+            
+            if (userProfile && !userProfile.contains(event.target)) {
+                const userInfoPanel = document.getElementById('userInfoPanel');
+                if (userInfoPanel) {
+                    userInfoPanel.style.display = 'none';
+                }
+            }
+        });
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            // Проверяем, есть ли сохраненный пользователь
+            const savedUser = localStorage.getItem('cybertrack_user');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                updateUIAfterLogin();
+            }
+
+            // Загружаем уведомления
+            loadNotifications();
+            loadAllNotifications();
+
+            // Обработчики форм
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            document.getElementById('registerForm').addEventListener('submit', handleRegister);
+
+            // Обновление статуса матчей
+            updateMatchStatus();
+
+            // Закрытие модальных окон при клике вне их
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.classList.remove('active');
+                    }
+                });
+            });
+        });
+
+        // Функции для работы с модальными окнами
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Переключение уведомлений
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notificationsDropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        // Переключение меню пользователя
+        function toggleUserMenu() {
+            const userInfoPanel = document.getElementById('userInfoPanel');
+            if (userInfoPanel.style.display === 'block') {
+                userInfoPanel.style.display = 'none';
+            } else {
+                userInfoPanel.style.display = 'block';
+            }
+        }
+
+        // Обработка входа
+        function handleLogin(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            // В демо-версии просто проверяем, что поля заполнены
+            if (email && password) {
+                // Создаем тестового пользователя
+                currentUser = {
+                    username: email.split('@')[0],
+                    email: email,
+                    avatar: email.charAt(0).toUpperCase(),
+                    joinedDate: new Date().toLocaleDateString('ru-RU')
+                };
+                
+                // Сохраняем в localStorage
+                localStorage.setItem('cybertrack_user', JSON.stringify(currentUser));
+                
+                // Обновляем интерфейс
+                updateUIAfterLogin();
+                
+                // Закрываем модальное окно
+                closeModal('loginModal');
+                
+                // Показываем уведомление
+                showNotification('success', 'Вы успешно вошли в систему!');
+                
+                // Добавляем системное уведомление
+                addNotification('Добро пожаловать!', 'Рады видеть вас снова на CyberTrack!');
+            } else {
+                alert('Пожалуйста, заполните все поля');
+            }
+        }
+
+        // Обработка регистрации
+        function handleRegister(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('registerUsername').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
+            
+            // Проверяем пароли
+            if (password !== confirmPassword) {
+                alert('Пароли не совпадают');
+                return;
+            }
+            
+            if (username && email && password) {
+                // Создаем нового пользователя
+                currentUser = {
+                    username: username,
+                    email: email,
+                    avatar: username.charAt(0).toUpperCase(),
+                    joinedDate: new Date().toLocaleDateString('ru-RU')
+                };
+                
+                // Сохраняем в localStorage
+                localStorage.setItem('cybertrack_user', JSON.stringify(currentUser));
+                
+                // Обновляем интерфейс
+                updateUIAfterLogin();
+                
+                // Закрываем модальное окно
+                closeModal('registerModal');
+                
+                // Показываем уведомление
+                showNotification('success', 'Регистрация прошла успешно!');
+                
+                // Добавляем системное уведомление
+                addNotification('Добро пожаловать!', 'Спасибо за регистрацию на CyberTrack!');
+            } else {
+                alert('Пожалуйста, заполните все поля');
+            }
+        }
+
+        // Выход из системы
+        function logout() {
+            if (confirm('Вы уверены, что хотите выйти?')) {
+                currentUser = null;
+                localStorage.removeItem('cybertrack_user');
+                
+                // Показываем кнопки входа
+                document.getElementById('authButtons').style.display = 'flex';
+                document.getElementById('userProfile').style.display = 'none';
+                
+                // Скрываем страницу уведомлений если она открыта
+                document.getElementById('notifications-page').classList.remove('active');
+                
+                showNotification('info', 'Вы вышли из системы');
+            }
+        }
+
+        // Обновление интерфейса после входа
+        function updateUIAfterLogin() {
+            if (currentUser) {
+                // Обновляем данные пользователя
+                document.getElementById('userName').textContent = currentUser.username;
+                document.getElementById('userEmail').textContent = currentUser.email;
+                document.getElementById('userAvatar').textContent = currentUser.avatar;
+                
+                // Показываем профиль и скрываем кнопки входа
+                document.getElementById('authButtons').style.display = 'none';
+                document.getElementById('userProfile').style.display = 'flex';
+            }
+        }
+
+        // Загрузка уведомлений в панель
+        function loadNotifications() {
+            const container = document.getElementById('notificationsList');
+            const unreadCount = notifications.filter(n => !n.read).length;
+            
+            // Обновляем счетчик
+            document.getElementById('notificationsCount').textContent = unreadCount;
+            
+            // Очищаем контейнер
+            container.innerHTML = '';
+            
+            // Добавляем только последние 3 непрочитанных уведомления
+            const recentNotifications = notifications
+                .filter(n => !n.read)
+                .slice(0, 3);
+            
+            recentNotifications.forEach(notification => {
+                const notificationElement = createNotificationElement(notification);
+                container.appendChild(notificationElement);
+            });
+            
+            // Если нет уведомлений
+            if (recentNotifications.length === 0) {
+                container.innerHTML = '<div class="notification-item" style="text-align: center; color: var(--gray);">Нет новых уведомлений</div>';
+            }
+        }
+
+        // Загрузка всех уведомлений на страницу
+        function loadAllNotifications() {
+            const container = document.getElementById('allNotificationsList');
+            container.innerHTML = '';
+            
+            notifications.forEach(notification => {
+                const notificationElement = createNotificationElement(notification, true);
+                container.appendChild(notificationElement);
+            });
+            
+            if (notifications.length === 0) {
+                container.innerHTML = '<div class="notification-item" style="text-align: center; color: var(--gray);">У вас пока нет уведомлений</div>';
+            }
+        }
+
+        // Создание элемента уведомления
+        function createNotificationElement(notification, showActions = false) {
+            const div = document.createElement('div');
+            div.className = `notification-item ${notification.read ? '' : 'unread'}`;
+            div.innerHTML = `
+                <div class="notification-title">${notification.title}</div>
+                <div class="notification-message">${notification.message}</div>
+                <div class="notification-time">${notification.time}</div>
+                ${showActions ? `
+                <div class="notification-actions">
+                    <button class="btn btn-small btn-outline" onclick="markAsRead(${notification.id})">Отметить как прочитанное</button>
+                    <button class="btn btn-small btn-outline" onclick="deleteNotification(${notification.id})">Удалить</button>
+                </div>
+                ` : ''}
+            `;
+            
+            div.onclick = function() {
+                if (!notification.read) {
+                    markAsRead(notification.id);
+                }
+            };
+            
+            return div;
+        }
+
+        // Отметить уведомление как прочитанное
+        function markAsRead(notificationId) {
+            const notification = notifications.find(n => n.id === notificationId);
+            if (notification && !notification.read) {
+                notification.read = true;
+                loadNotifications();
+                loadAllNotifications();
+                showNotification('info', 'Уведомление отмечено как прочитанное');
+            }
+        }
+
+        // Отметить все уведомления как прочитанные
+        function markAllAsRead() {
+            notifications.forEach(n => n.read = true);
+            loadNotifications();
+            loadAllNotifications();
+            showNotification('info', 'Все уведомления отмечены как прочитанные');
+        }
+
+        // Удалить уведомление
+        function deleteNotification(notificationId) {
+            notifications = notifications.filter(n => n.id !== notificationId);
+            loadNotifications();
+            loadAllNotifications();
+            showNotification('info', 'Уведомление удалено');
+        }
+
+        // Очистить все уведомления
+        function clearAllNotifications() {
+            if (confirm('Вы уверены, что хотите удалить все уведомления?')) {
+                notifications = [];
+                loadNotifications();
+                loadAllNotifications();
+                showNotification('info', 'Все уведомления удалены');
+            }
+        }
+
+        // Добавить новое уведомление
+        function addNotification(title, message) {
+            const newNotification = {
+                id: notifications.length > 0 ? Math.max(...notifications.map(n => n.id)) + 1 : 1,
+                title: title,
+                message: message,
+                time: 'Только что',
+                read: false,
+                type: 'system'
+            };
+            
+            notifications.unshift(newNotification);
+            loadNotifications();
+            loadAllNotifications();
+            
+            // Показываем всплывающее уведомление
+            showNotification('info', title);
+        }
+
+        // Показать уведомление (всплывающее)
+        function showNotification(type, message) {
+            // Создаем элемент уведомления
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                color: white;
+                font-weight: 600;
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+                max-width: 300px;
+            `;
+            
+            if (type === 'success') {
+                notification.style.backgroundColor = 'var(--success)';
+            } else if (type === 'error') {
+                notification.style.backgroundColor = 'var(--danger)';
+            } else {
+                notification.style.backgroundColor = 'var(--info)';
+            }
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Удаляем через 3 секунды
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Добавляем стили для анимации уведомлений
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Показать страницу уведомлений
+        function showNotificationsPage() {
+            // Скрываем все основные секции
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Показываем страницу уведомлений
+            document.getElementById('notifications-page').classList.add('active');
+            
+            // Обновляем меню
+            updateMenuActive('#notifications-page');
+            
+            // Прокручиваем к началу
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Обновляем список уведомлений
+            loadAllNotifications();
+        }
+
+        // Показать главную страницу
+        function showHome() {
+            // Показываем все основные секции
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.display = 'block';
+            });
+            
+            // Скрываем страницу уведомлений
+            document.getElementById('notifications-page').classList.remove('active');
+            
+            // Обновляем меню
+            updateMenuActive('#');
+            
+            // Прокручиваем к началу
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Показать раздел
+        function showSection(sectionId) {
+            showHome();
+            
+            // Прокручиваем к нужному разделу
+            setTimeout(() => {
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    window.scrollTo({
+                        top: section.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+                
+                // Обновляем меню
+                updateMenuActive(`#${sectionId}`);
+            }, 100);
+        }
+
+        // Обновить активный пункт меню
+        function updateMenuActive(href) {
+            document.querySelectorAll('.nav-menu a').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === href) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        // Фильтрация игр
+        function filterGames(game) {
+            document.querySelectorAll('.game-filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            event.target.classList.add('active');
+            
+            // Здесь можно добавить логику фильтрации контента
+            showNotification('info', `Фильтр: ${game === 'all' ? 'Все игры' : game}`);
+        }
+
+        // Отслеживание турнира
+        function trackTournament(tournamentName) {
+            if (!currentUser) {
+                alert('Чтобы отслеживать турниры, войдите в систему');
+                openModal('loginModal');
+                return;
+            }
+            
+            addNotification('Турнир добавлен в отслеживание', `Теперь вы отслеживаете ${tournamentName}`);
+            showNotification('success', `Вы начали отслеживать ${tournamentName}`);
+        }
+
+        // Подписка на рассылку
+        function subscribe() {
+            const email = document.getElementById('subscribeEmail').value;
+            if (email) {
+                if (validateEmail(email)) {
+                    showNotification('success', 'Спасибо за подписку! Вы будете получать уведомления о матчах.');
+                    document.getElementById('subscribeEmail').value = '';
+                    
+                    // Добавляем уведомление
+                    addNotification('Подписка оформлена', 'Вы подписались на рассылку уведомлений о матчах');
+                } else {
+                    alert('Пожалуйста, введите корректный email');
+                }
+            } else {
+                alert('Пожалуйста, введите email');
+            }
+        }
+
+        // Валидация email
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        // Показать профиль (заглушка)
+        function showProfile() {
+            alert('Страница профиля будет доступна в полной версии');
+        }
+
+        // Показать настройки (заглушка)
+        function showSettings() {
+            alert('Настройки будут доступны в полной версии');
+        }
+
+        // Обновление статуса матчей в реальном времени
+        function updateMatchStatus() {
+            const liveBadge = document.querySelector('.live-badge');
+            if (liveBadge) {
+                setInterval(() => {
+                    liveBadge.style.opacity = liveBadge.style.opacity === '0.7' ? '1' : '0.7';
+                }, 1000);
+            }
+        }
+    </script>
+</body>
+</html>
